@@ -20,6 +20,6 @@ public abstract class ServiceManager {
         return context;
     }
 
-    public abstract void executeService(ServiceRequest request, ResponseCallback<?> responseCallback);
+    public abstract<T> void executeService(ServiceRequest request, ResponseCallback responseCallback);
 
 }

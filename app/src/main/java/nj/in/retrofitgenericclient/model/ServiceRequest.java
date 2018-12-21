@@ -9,25 +9,18 @@ import java.util.Map;
 
 public class ServiceRequest<T> {
 
-    private enum Type{
-        GET,
-        PUT,
-        POST,
-        DELETE
-    }
-
-    private T response;
+    private Class<?> responseClass;
     private String url;
     private Map<String,String> headers = new HashMap<>();
     private Map<String,String> parameters = new HashMap<>();
-    private Type type;
+    private RequestType type;
 
-    public T getResponse() {
-        return response;
+    public Class<?> getResponseClass() {
+        return responseClass;
     }
 
-    public void setResponse(T response) {
-        this.response = response;
+    public void setResponseClass(Class<?> responseClass) {
+        this.responseClass = responseClass;
     }
 
     public String getUrl() {
@@ -54,11 +47,11 @@ public class ServiceRequest<T> {
         this.parameters = parameters;
     }
 
-    public Type getType() {
+    public RequestType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(RequestType type) {
         this.type = type;
     }
 }

@@ -2,6 +2,9 @@ package nj.in.retrofitgenericclient.network;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+
+import nj.in.retrofitgenericclient.model.RequestType;
 import nj.in.retrofitgenericclient.model.ServiceRequest;
 import nj.in.retrofitgenericclient.network.apiInterfaces.RetrofitApiInterface;
 import retrofit2.Call;
@@ -35,21 +38,34 @@ public class RetrofitServiceManager extends ServiceManager{
 
     @Override
     public void executeService(final ServiceRequest request, final ResponseCallback responseCallback) {
-           Call<Object> call =  apiInterface.executeGetService(request.getUrl(),request.getHeaders(),request.getParameters());
-           call.enqueue(new RetrofitCallBack<Object>(responseCallback));
+        Call<Object> call;
+        switch (request.getType() ){
+            case GET:
+                call =  apiInterface.executeGetService
+                        (request.getUrl(),request.getHeaders(),request.getParameters());
+                break;
+            default:
+                return;
+        }
+          if(call!=null) {
+              call.enqueue(new RetrofitCallBack<Object>(responseCallback, request.getResponseClass()));
+          }
         }
 
 
      private class RetrofitCallBack<T> implements Callback<T>{
         ResponseCallback responseCallback;
+        Class<?> responseClass;
 
-        RetrofitCallBack(ResponseCallback<T> responseCallback){
+        RetrofitCallBack(ResponseCallback responseCallback, Class<?> responseClass){
             this.responseCallback = responseCallback;
+            this.responseClass = responseClass;
         }
 
          @Override
          public void onResponse(Call<T> call, Response<T> response) {
-             responseCallback.castResponse(response.toString());
+             String jsonString = new Gson().toJson(response.body());
+             responseCallback.onSuccess(new Gson().fromJson(jsonString,responseClass));
          }
 
          @Override

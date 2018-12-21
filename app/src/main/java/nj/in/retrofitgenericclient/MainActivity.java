@@ -5,12 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 
 import nj.in.retrofitgenericclient.model.MyPojo;
+import nj.in.retrofitgenericclient.model.RequestType;
 import nj.in.retrofitgenericclient.model.ServiceRequest;
 import nj.in.retrofitgenericclient.network.ResponseCallback;
 import nj.in.retrofitgenericclient.network.RetrofitServiceManager;
 import nj.in.retrofitgenericclient.network.ServiceManager;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ResponseCallback{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,17 +20,21 @@ public class MainActivity extends AppCompatActivity {
 
         ServiceManager serviceManager = new RetrofitServiceManager(getApplicationContext());
         ServiceRequest serviceRequest = new ServiceRequest();
+        serviceRequest.setResponseClass(MyPojo.class);
+        serviceRequest.setType(RequestType.GET);
         serviceRequest.setUrl("https://jsonplaceholder.typicode.com/todos/1");
-        serviceManager.executeService(serviceRequest, new ResponseCallback<MyPojo>() {
-            @Override
-            public void onSuccess(MyPojo response) {
-                Log.d("resp",response.toString());
-            }
+        serviceManager.executeService(serviceRequest, this);
+    }
 
-            @Override
-            public void onFailure(Throwable t) {
-                t.printStackTrace();
-            }
-        });
+    @Override
+    public void onSuccess(Object response) {
+        if(response instanceof MyPojo){
+            Log.d("response",response.toString());
+        }
+    }
+
+    @Override
+    public void onFailure(Throwable t) {
+
     }
 }
